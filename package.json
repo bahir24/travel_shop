@@ -20,7 +20,8 @@
     "webpack-dev-server": "^4.11.0"
   },
   "scripts": {
-    "build": "webpack",
-    "serve": "webpack  serve --mode development --open --config webpack.config.js"
+    "dev": "if [ -d ./dist ]; then rm -r ./dist; fi && webpack --mode development",
+    "watch": "webpack serve --mode development",
+    "build": "if [ -d ./dist ]; then rm -r ./dist; fi && webpack --mode production"
   }
 }

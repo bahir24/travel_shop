@@ -2,13 +2,8 @@ import {getTours} from "@rest/tours";
 import './assets/styles/main.scss';
 import {images} from "@services/img/img";
 import {ITour} from "./models/tours/tours";
-import {tourItemTemplate} from "./templates/tours";
+import {tourTemplate} from "./templates/tours";
 import {openModal} from "@services/modal/modalService";
-import {initFooterTitle, initHeaderTitle} from "@services/general/general";
-import {isUndefined} from "webpack-merge/dist/utils";
-// export let  toursDataArray: ITour[] = [];
-
-// ссылка на изображения нужна чтобы webpack формировал изображения в папке dist
 const imagesStore = images;
 
 interface IApp {
@@ -16,101 +11,60 @@ interface IApp {
 
     getTourData(): void
 
-    initToursDivElements(data: ITour[]): void
+    makeTicketCard(item: ITour): string
 
-    tourData: ITour[] | undefined
-
-    rootElement
+    fillContent(): void
 }
 
-let app: IApp = {
-    tourData: this.getTourData(),
+class App implements IApp {
+    private tourData;
+    private tourWrapper;
 
-    rootElement: () => document.querySelector('.main-app'),
-    // tourData(): isUndefined(this) ? undefined : this.getTourData(),
+    private cards;
+
+    constructor() {
+    }
 
     init() {
-        initHeaderTitle('Туры', 'h1');
-        initFooterTitle('Туры по всему миру', 'h2');
-    },
+        this.getTourData();
+        this.setTourWrapper();
 
-    async getTourData() {
-        return getTours().then((data: ITour[]) => data);
+    };
 
-    },
-
-    initToursDivElements(data) {
-
-        // if (Array.isArray(data)) {
-        const rootElement = document.querySelector('.main-app');
-        const tourWrap = document.createElement('div');
-
-        tourWrap.classList.add('tour-wrap');
-
-
-        // init click for modal
-        initTourElemListener(tourWrap);
-
-        let rootElementData = '';
-        data.forEach((el, i) => {
-            rootElementData += tourItemTemplate(el, i);
+    getTourData() {
+        getTours().then(response => {
+            this.tourData = response;
+            this.fillContent();
         });
+    };
 
-        tourWrap.innerHTML = rootElementData;
-        tourWrap.querySelectorAll('.tour-item').forEach(card => initTourElemListener(card));
-        rootElement.appendChild(tourWrap);
-        // }
-    }
+    makeTicketCard(item: ITour) {
+        return tourTemplate(item);
+    };
 
+    fillContent() {
+        this.tourWrapper.innerHTML = this.tourData.map(item => this.makeTicketCard(item));
+        this.setCards();
+        this.setCardListener();
+    };
 
-    // const tourData: Promise<ITour[]> = getTours();
+    setTourWrapper() {
+        this.tourWrapper = document.querySelector('.tour-wrap');
+    };
 
-}
+    setCards(){
+        this.cards = this.tourWrapper.querySelectorAll('.card');
+    };
 
-
-// init data
-
-
-// tourData.then((data): void => {
-//     toursDataArray = data;
-//     initToursDivElements(data);
-// });
-
-
-// init app
-
-/*  - перенести все методы ниже в раздел services (сюда импортировать и вызывать)
--   создать метод initApp который будет здесь вызываться, в теле метода добавить эти имортированные методы
-    - Указать в методах возвращающие типы, типы для параметров, в теле функции также указать типы чтобы не было ошибок
-*/
-function initToursDivElements(data) {
-
-    if (Array.isArray(data)) {
-        const rootElement = document.querySelector('.main-app');
-        const tourWrap = document.createElement('div');
-
-        tourWrap.classList.add('tour-wrap');
-
-
-        // init click for modal
-        initTourElemListener(tourWrap);
-
-        let rootElementData = '';
-        data.forEach((el, i) => {
-            rootElementData += tourItemTemplate(el, i);
-        });
-
-        tourWrap.innerHTML = rootElementData;
-        tourWrap.querySelectorAll('.tour-item').forEach(card => initTourElemListener(card));
-        rootElement.appendChild(tourWrap);
+    setCardListener() {
+        this.cards.forEach((card, index) =>
+            card.addEventListener(
+                'click',
+                () => openModal(this.tourData[index])
+            )
+        );
     }
 }
 
-
-function initTourElemListener(tourWrap) {
-    tourWrap.addEventListener('click', function (event) {
-        const dataIndex = this.getAttribute('data-tour-item-index');
-        openModal('order', Number(dataIndex));
-    });
-}
-
+let app = new App();
+document.addEventListener('DOMContentLoaded', () => app.init());

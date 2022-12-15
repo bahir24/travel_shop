@@ -1,11 +1,17 @@
 @import "variables";
 @import "buttons";
+@import "modal";
 
 
 body {
   padding: 0;
   margin: 0;
   height: 100vh;
+}
+
+body.no-scroll{
+  overflow: hidden;
+  padding-right: 15px;
 }
 
 .main-app-wrap {

@@ -1,0 +1,27 @@
+.modal-element{
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1060;
+  background-color: rgb(10 5 0 / 44%);
+}
+
+.tour-modal{
+  max-width: 60%;
+  background: #ffffff;
+  margin: auto;
+  z-index: 1080;
+  padding: 10px;
+}
+
+.img-section img{
+  width: 100%;
+}
