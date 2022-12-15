@@ -1,8 +1,20 @@
-// Определить интерфейс ITicket
+export interface ITicket {
+    description: string,
+    hotel: string,
+    location: ILocation,
+    name: string,
+    price: string,
+    tourOperator: string,
+}
 
-// Определить интерфейс IVipTicket который расширяет  ITicket
+export interface IVipTicket extends ITicket {
+    vipNumber: string,
+    vipStatus: string
+}
 
-// Определить тип TicketType который будет объединять 2 интерфейса IVipTicket и ITicket
+export type TicketType = IVipTicket & ITicket;
 
-
-
+export interface ILocation {
+    x: string,
+    y: string
+}

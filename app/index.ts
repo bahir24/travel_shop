@@ -1,12 +1,12 @@
 import {getTours} from "@rest/tours";
 import './assets/styles/main.scss';
 import {images} from "@services/img/img";
-import {ITours} from "./models/tours";
-import {getTourTemplate} from "./templates/tours";
-import {openModal} from "@services/modal/modalService";
+import {ITour} from "./models/tours/tours";
+import {tourItemTemplate} from "./templates/tours";
+import { ModalService } from "@services/modal/modalService";
 import {initFooterTitle, initHeaderTitle} from "@services/general/general";
 
-export let  toursDataArray: ITours[] = [];
+export let  toursDataArray: ITour[] = [];
 const imagesStore = images; // ссылка на изображения нужна чтобы webpack формировал изображения в папке dist
 
 
@@ -14,7 +14,7 @@ const imagesStore = images; // ссылка на изображения нужн
 initHeaderTitle('Туры', 'h1');
 initFooterTitle('Туры по всему миру', 'h2');
 // init data
-const tourData: Promise<ITours[]> = getTours();
+const tourData: Promise<ITour[]> = getTours();
 
 tourData.then((data): void => {
   console.log('call')
@@ -41,9 +41,9 @@ function initToursDivElements(data) {
     initTourElemListener(tourWrap);
 
     let rootElementData = '';
-    data.forEach((el, i) => {
-      rootElementData += getTourTemplate(el, i);
-    });
+    // data.forEach((el, i) => {
+    //   rootElementData += getTourTemplate(el, i);
+    // });
 
     tourWrap.innerHTML = rootElementData;
     rootElement.appendChild(tourWrap) ;
@@ -65,7 +65,7 @@ function initTourElemListener(tourWrap) {
 
     if (realTarget) {
       const dataIndex = realTarget.getAttribute('data-tour-item-index');
-      openModal('order', Number(dataIndex));
+      (new ModalService(realTarget)).open();
     }
   });
 }

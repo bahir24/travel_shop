@@ -1,12 +1,12 @@
-import {ITours} from "../models/tours";
+import { ITour } from "../models/tours/tours";
+import { TicketType } from "../models/ticket/ticket";
 
-
-// указать возвращающий тип
-export function initTicketElementTemplate(data, i) {
-    const tmpl = `
-       <div  data-item-index=${i} class="ticket-block">
-           <p>${data}</p>
-       </div>
-    `
-    return tmpl;
+export function ticketItemTemplate(item: ITour | TicketType): string {
+    return ` <div class="card h-100 tour-item mt-4 mb-4">
+                <div class="card-body d-flex flex-column justify-content-between">
+                    <h5 class="card-title">${item.name}</h5>
+                    <p class="card-text">${item.description}</p>
+                    <p class="card-text text-muted">${item.price}</p>
+                </div>
+            </div>`
 }

@@ -1,9 +1,10 @@
 import {getTicketById, postTicketData} from "@rest/tickets";
 import '@myCss'; // добавлена новая ссылка - ссылка ведет на один файл
 import '@assets/styles/tickets.scss'
-import {initTicketElementTemplate} from "../../templates/ticketInfo";
+import {ticketItemTemplate} from "../../templates/ticketInfo";
 import {IVipTicket, TicketType, ITicket} from "../../models/ticket/ticket";
 import {initFooterTitle, initHeaderTitle} from "@services/general/general";
+import {ITour} from "../../models/tours/tours";
 
 
 let ticketInstance: TicketType ;
@@ -45,7 +46,7 @@ function initTicketInfo(ticket: TicketType) {
     let ticketElemTemplate;
 
     ticketElemsArr.forEach((el, i) => {
-        ticketElemTemplate+= initTicketElementTemplate(el, i);
+        ticketElemTemplate+= ticketItemTemplate(ticket);
     });
 
     targetElement.innerHTML = ticketElemTemplate;
@@ -54,7 +55,7 @@ function initTicketInfo(ticket: TicketType) {
 
 function initUserData() {
 const userInfo = document.querySelectorAll('.user-info > p');
-const userInfoObj;
+const userInfoObj: [] = [];
     userInfo.forEach((el) => {
     const inputDataName = el.getAttribute('data-name');
     if (inputDataName) {
