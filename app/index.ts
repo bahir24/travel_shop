@@ -16,17 +16,17 @@ interface IApp {
 
     getTourData(): void
 
-  initToursDivElements(data: ITour[]): void
+    initToursDivElements(data: ITour[]): void
 
     tourData: ITour[] | undefined
 
-  rootElement
+    rootElement
 }
 
 let app: IApp = {
     tourData: this.getTourData(),
 
-  rootElement: () => document.querySelector('.main-app'),
+    rootElement: () => document.querySelector('.main-app'),
     // tourData(): isUndefined(this) ? undefined : this.getTourData(),
 
     init() {
@@ -39,28 +39,28 @@ let app: IApp = {
 
     },
 
-  initToursDivElements(data) {
+    initToursDivElements(data) {
 
-  // if (Array.isArray(data)) {
-    const rootElement = document.querySelector('.main-app');
-    const tourWrap = document.createElement('div');
+        // if (Array.isArray(data)) {
+        const rootElement = document.querySelector('.main-app');
+        const tourWrap = document.createElement('div');
 
-    tourWrap.classList.add('tour-wrap');
+        tourWrap.classList.add('tour-wrap');
 
 
-    // init click for modal
-    initTourElemListener(tourWrap);
+        // init click for modal
+        initTourElemListener(tourWrap);
 
-    let rootElementData = '';
-    data.forEach((el, i) => {
-      rootElementData += tourItemTemplate(el, i);
-    });
+        let rootElementData = '';
+        data.forEach((el, i) => {
+            rootElementData += tourItemTemplate(el, i);
+        });
 
-    tourWrap.innerHTML = rootElementData;
-    tourWrap.querySelectorAll('.tour-item').forEach(card => initTourElemListener(card));
-    rootElement.appendChild(tourWrap);
-  // }
-}
+        tourWrap.innerHTML = rootElementData;
+        tourWrap.querySelectorAll('.tour-item').forEach(card => initTourElemListener(card));
+        rootElement.appendChild(tourWrap);
+        // }
+    }
 
 
     // const tourData: Promise<ITour[]> = getTours();
