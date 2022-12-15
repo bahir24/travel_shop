@@ -3,7 +3,7 @@ import './assets/styles/main.scss';
 import {images} from "@services/img/img";
 import {ITour} from "./models/tours/tours";
 import {tourItemTemplate} from "./templates/tours";
-import { ModalService } from "@services/modal/modalService";
+import {openModal} from "@services/modal/modalService";
 import {initFooterTitle, initHeaderTitle} from "@services/general/general";
 
 export let  toursDataArray: ITour[] = [];
@@ -37,36 +37,26 @@ function initToursDivElements(data) {
 
     tourWrap.classList.add('tour-wrap');
 
+
     // init click for modal
     initTourElemListener(tourWrap);
 
     let rootElementData = '';
-    // data.forEach((el, i) => {
-    //   rootElementData += getTourTemplate(el, i);
-    // });
+    data.forEach((el, i) => {
+      rootElementData += tourItemTemplate(el, i);
+    });
 
     tourWrap.innerHTML = rootElementData;
-    rootElement.appendChild(tourWrap) ;
+    tourWrap.querySelectorAll('.tour-item').forEach(card => initTourElemListener(card));
+    rootElement.appendChild(tourWrap);
   }
 }
 
 
 function initTourElemListener(tourWrap) {
-  tourWrap.addEventListener('click', (ev) => {
-    const targetItem = ev.target;
-    const parentItem = targetItem?.parentNode;
-    let realTarget;
-
-    if (targetItem.hasAttribute('data-tour-item-index')) {
-      realTarget = targetItem;
-    } else if (parentItem && parentItem.hasAttribute('data-tour-item-index')) {
-      realTarget = parentItem;
-    }
-
-    if (realTarget) {
-      const dataIndex = realTarget.getAttribute('data-tour-item-index');
-      (new ModalService(realTarget)).open();
-    }
+  tourWrap.addEventListener('click', function(event){
+      const dataIndex = this.getAttribute('data-tour-item-index');
+      openModal('order', Number(dataIndex));
   });
 }
 

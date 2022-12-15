@@ -1,89 +1,72 @@
-import {getTicketById, postTicketData} from "@rest/tickets";
-import '@myCss'; // добавлена новая ссылка - ссылка ведет на один файл
-import '@assets/styles/tickets.scss'
-import {ticketItemTemplate} from "../../templates/ticketInfo";
-import {IVipTicket, TicketType, ITicket} from "../../models/ticket/ticket";
-import {initFooterTitle, initHeaderTitle} from "@services/general/general";
-import {ITour} from "../../models/tours/tours";
+import { getTicketById, postTicketData } from '@services/rest/tickets'
+import { ITicket, IVipTicket } from 'models/ticket/ticket'
+import { initTicketElementTemplate } from '../../templates/ticketInfo'
+import '@myCss'
+import { IUser } from 'models/user/user'
+import { initHeaderTitle, initFooterTitle } from '@services/general/general'
+import { openModal } from "@services/modal/modalService";
+import { Modal } from '../../classess/modal'
 
 
-let ticketInstance: TicketType ;
-let ticketPostInstance;
-const clientType = "custom";
+const modal = new Modal()
 
+let ticketInstance: ITicket | IVipTicket
+const clientType = 'custom'
+let ticketPostInstance: boolean
 
+export let toursDataArray: IVipTicket[]
 
-// init main  data
-initApp();
-registerConfirmButton();
+const ticketData:Promise<IVipTicket[]> = getTicketById<IVipTicket>('someId')
 
+ticketData.then((data):void => {
+    ticketInstance = data[0]
+    const ticketName = ticketInstance?.name || ' '
+    initHeaderTitle(ticketName, 'h1')
+    initFooterTitle('Туры по всему миру', 'h2');
+    initTicketInfo(ticketInstance)
+    registerConfirmButton()
 
+})
 
-function initApp(): void {
-    const ticketData: Promise<IVipTicket[]> = getTicketById<IVipTicket>('someId');
-    ticketData.then((data): void => {
-        ticketInstance = data[0];
-        const ticketName = typeof ticketInstance?.name === "string" ? ticketInstance?.name : '';
-        initHeaderTitle(ticketName, 'h3');
-        initFooterTitle('Туры по всему миру', 'h2');
-        initTicketInfo(ticketInstance);
-    });
-}
+function initTicketInfo(ticket: IVipTicket | ITicket) :void {
 
-/*  - перенести все методы ниже в раздел services (сюда импортировать и вызывать)
-    - Указать в методах возвращающие типы, в теле функции также указать типы чтобы не было ошибок
-*/
-
-function initTicketInfo(ticket: TicketType) {
-    const targetElement = document.querySelector('.ticket-info');
-
-    const ticketDescription = ticket?.description;
-    const ticketOperator = ticket?.tourOperator;
-    const vipClientType = ticket.vipStatus;
-
-    const ticketElemsArr: [string, string, string] = [ticketDescription, ticketOperator, vipClientType];
-
-    let ticketElemTemplate;
-
-    ticketElemsArr.forEach((el, i) => {
-        ticketElemTemplate+= ticketItemTemplate(ticket);
-    });
-
-    targetElement.innerHTML = ticketElemTemplate;
-
-}
-
-function initUserData() {
-const userInfo = document.querySelectorAll('.user-info > p');
-const userInfoObj: [] = [];
-    userInfo.forEach((el) => {
-    const inputDataName = el.getAttribute('data-name');
-    if (inputDataName) {
-        const inputElems = el.querySelector('input');
-        userInfoObj[inputDataName] = inputElems.value;
-    }
-    });
-
-    console.log('userInfoObj',userInfoObj)
-    return userInfoObj;
-}
-
-function initPostData(data) {
-    initUserData();
-    postTicketData(data).then((data) => {
-        if (data.success) {
-
-        }
+    const ticketDescription = ticket?.description || ' ';
+    const tourOperator = ticket?.tourOperator || ' ';
+    const vipClientType = (ticket as IVipTicket).vipStatus || ' ';
+    let ticketText: string = '';
+    [ticketDescription, tourOperator, vipClientType].forEach((el, i) => {
+        ticketText += initTicketElementTemplate(el, i)
     })
+    const targetEl = document.getElementsByClassName('ticket-info')[0];
+    targetEl.innerHTML = ticketText;
 }
 
-function registerConfirmButton(): void {
-    const targetEl = document.getElementById('accept-order-button');
+
+function registerConfirmButton():void {
+    const targetEl = document.getElementById('accept-order-button')
     if (targetEl) {
         targetEl.addEventListener('click', () => {
-            initPostData(ticketPostInstance);
-        });
+            initUserData()
+            modal.open(`
+            <div>
+            <p data-moda-id="tour-modal" class="close-modal">X</p>
+            <p>Вы купили билет !</p>
+            </div>
+            `)
+        })
     }
 }
 
-
+function initUserData(): IUser {
+    const userInfo = document.querySelectorAll('.user-info > p')
+    const userInfoObj = <IUser>{}
+    userInfo.forEach((el) => {
+        const inputDataName = el.getAttribute('data-name')
+        if (inputDataName) {
+            const inputElement = el.querySelector('input')
+            userInfoObj[inputDataName] = (inputElement as HTMLInputElement).value;
+        }
+    })
+    console.log(userInfoObj)
+    return userInfoObj
+}

@@ -1,6 +1,7 @@
 import { ITour } from "../models/tours/tours";
 
 export function createModalTemplate(item: ITour): string {
+    console.log(item);
     return `
         
             <div class="card tour-modal">
